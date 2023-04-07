@@ -1,16 +1,19 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { DockerSandBox } from './docker-sandbox';
 import { compilerArray } from './compilers';
-import { Response } from 'express';
+import { DockerSandBox } from './docker-sandbox';
+import { SolveQuestionDto } from './dtos/solve-question.dto';
+import { LanguagesService } from 'src/languages/languages.service';
 
 @Injectable()
 export class ProblemsService {
-  async solve(code, language, res: Response) {
-    const stdin = '';
+  constructor(private _languagesService: LanguagesService) {}
 
+  async solve(body: SolveQuestionDto) {
+    const { languageId, code, stdin } = body;
+
+    // const path = __dirname + '/'; //current working path
     const folder = 'temp/' + this.random(10); //folder in which the temporary folder will be saved
-    const path = __dirname + '/'; //current working path
     const vm_name = 'virtual_machine'; //name of virtual machine that we want to execute
     const timeout_value = 60; //Timeout Value, In Seconds
 
@@ -19,38 +22,27 @@ export class ProblemsService {
       path: '/home/arwa/Documents/my-projects/online-judge/src/problems/',
       folder,
       vm_name,
-      compiler_name: compilerArray[language][0],
-      file_name: compilerArray[language][1],
+      compiler_name: compilerArray[languageId][0],
+      file_name: compilerArray[languageId][1],
       code,
-      output_command: compilerArray[language][2],
-      languageName: compilerArray[language][3],
-      e_arguments: compilerArray[language][4],
+      output_command: compilerArray[languageId][2],
+      languageName: compilerArray[languageId][3],
+      e_arguments: compilerArray[languageId][4],
       stdin_data: stdin,
     });
 
-    // throw new BadRequestException(' BAAAADD');
-    // (data, exec_time: any, err: any) => {
-    //   console.log('Data: received: ' + data);
-    //   return res.send({
-    // output: data,
-    // langid: language,
-    // code: code,
-    // errors: err,
-    // time: exec_time,
-    //   });
-    // }
-    const response = await sandbox.run();
+    const { data, time, errors } = await sandbox.run();
 
     return {
-      // output: data,
-      //   langid: language,
-      //   code: code,
-      //   errors: err,
-      //   time: exec_time,
+      output: data,
+      code: code,
+      languageId,
+      errors,
+      time,
     };
   }
 
-  private random(size) {
+  private random(size: number) {
     //returns a crypto-safe random
     return randomBytes(size).toString('hex');
   }

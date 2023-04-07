@@ -24,7 +24,7 @@ export class BaseRepo<
     return documents;
   }
 
-  async findById(id: number) {
+  async findById(id) {
     const document = await this._model.findById(id);
 
     return document;

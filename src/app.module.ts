@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProblemsModule } from './problems/problems.module';
+import { LanguagesModule } from './languages/languages.module';
 import envDevelopment from './common/config/env.development';
 import envProduction from './common/config/env.production';
 
@@ -28,6 +29,7 @@ const load = !env ? [envDevelopment] : [envProduction];
       }),
     }),
     ProblemsModule,
+    LanguagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

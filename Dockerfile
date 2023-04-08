@@ -22,25 +22,12 @@ RUN apt-get install -y npm
 RUN apt-get install -y golang-go	
 RUN apt-get install -y nodejs
 
-# RUN npm install -g underscore request express jade shelljs passport http sys jquery lodash async mocha moment connect validator restify ejs ws co when helmet wrench brain mustache should backbone forever  debug && export NODE_PATH=/usr/local/lib/node_modules/
-
 RUN apt-get install -y clojure1.4
 
 
 #prepare for Java download
 RUN apt-get install -y python-software-properties
 RUN apt-get install -y software-properties-common
-
-#grab oracle java (auto accept licence)
-# RUN add-apt-repository -y ppa:webupd8team/java
-# RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" > /etc/apt/sources.list
-# RUN echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" > /etc/apt/sources.list
-# RUN gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv C2518248EEA14886
-# RUN gpg --export --armor C2518248EEA14886 | apt-key add -
-# RUN apt-get update
-# RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-# RUN apt-get install openjdk-8-jdk
-
 
 RUN apt-get install -y gobjc
 RUN apt-get install -y gnustep-devel &&  sed -i 's/#define BASE_NATIVE_OBJC_EXCEPTIONS     1/#define BASE_NATIVE_OBJC_EXCEPTIONS     0/g' /usr/include/GNUstep/GNUstepBase/GSConfig.h
@@ -58,5 +45,4 @@ RUN mkdir -p /opt/rust && \
 RUN apt-get install -y sudo
 RUN apt-get install -y bc
 
-RUN echo "mysql ALL = NOPASSWD: /usr/sbin/service mysql start" | cat >> /etc/sudoers
 

@@ -31,10 +31,8 @@ fi
 
 echo output:
 # pipe to sed simply for pretty nice indentation
-# docker logs $cont 
 docker logs $cont | sed 's/^/\t/'
-# docker logs dc0b9de8e98a83cd6c952eb14fb3e742edabbe35450aa2d85c637faf4b1e6d74 | sed 's/^/\t/'
 
 # Sometimes we will need to execute a command, but we don't want the output displayed on the screen
 # remove the container and discard output 
-# docker rm $cont &> /dev/null
+docker rm $cont &> /dev/null

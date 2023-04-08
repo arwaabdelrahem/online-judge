@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { exec } from 'child_process';
+import { exec } from 'promisify-child-process';
 import * as fs from 'fs';
 import { ExecutionResponse } from 'src/common/interfaces/execution-response';
 
@@ -90,34 +90,34 @@ export class DockerSandBox {
       path +
       folder;
 
-    return new Promise((resolve, reject) => {
-      exec(command, (error, stdout, stderr) => {
-        if (stderr) {
-          console.log('EXEC stderr:96 ', stderr);
-          reject(stderr);
-        }
+    console.log(
+      '🚀 ~ file: docker-sandbox.ts:94 ~ DockerSandBox ~ command:',
+      command,
+    );
 
-        fs.writeFile(path + folder + '/' + file_name, code, (err) => {
-          if (err) {
-            console.log('ERRORRR WRITE FILE:102', err);
-            reject(err);
-          } else {
-            console.log(langName + ' file was saved!:105');
-            exec("chmod 777 '" + path + folder + '/' + file_name + "'");
+    const { stderr } = await exec(command);
+    console.log(
+      '🚀 ~ file: docker-sandbox.ts:100 ~ DockerSandBox ~ stderr:',
+      stderr,
+    );
 
-            fs.writeFile(path + folder + '/inputFile', stdin_data, (err) => {
-              if (err) {
-                console.log('ERROR:110', err);
-                reject(err);
-              } else {
-                console.log('Input file was saved!:113');
-                resolve('Input file was saved!');
-              }
-            });
-          }
-        });
-      });
+    if (stderr) {
+      throw new InternalServerErrorException(stderr);
+    }
+
+    fs.writeFileSync(path + folder + '/' + file_name, code, {
+      encoding: 'utf8',
     });
+
+    console.log(langName + ' file was saved!:112');
+    await exec("chmod 777 '" + path + folder + '/' + file_name + "'");
+
+    fs.writeFileSync(path + folder + '/inputFile', stdin_data, {
+      encoding: 'utf8',
+    });
+
+    console.log('Input file was saved!:119');
+    return;
   }
 
   async execute(
@@ -131,7 +131,7 @@ export class DockerSandBox {
     extra_arguments: string,
     langName: string,
   ): Promise<ExecutionResponse> {
-    let myC = 0; //variable to enforce the timeout_value
+    const myC = 0; //variable to enforce the timeout_value
     const fullPath = path + folder;
 
     //this statement is what is executed
@@ -157,111 +157,99 @@ export class DockerSandBox {
     console.log('st:157', st);
 
     //execute the Docker, This is done ASYNCHRONOUSLY
-    return new Promise((resolve, reject) => {
-      exec(st);
-      console.log('----------------------------------------------');
-      //Check For File named "completed" after every 1 second
-      const intid = setInterval(() => {
-        //   Displaying the checking message after 1 second interval, testing purposes only
-        console.log(
-          'Checking ' + this.path + this.folder + ':167 for completion: ' + myC,
+    const { stderr } = await exec(st);
+    console.log(
+      '🚀 ~ file: docker-sandbox.ts:161 ~ DockerSandBox ~ stderr:',
+      stderr,
+    );
+    if (stderr) {
+      throw new InternalServerErrorException(stderr);
+    }
+    console.log('----------------------------------------------');
+    //   Displaying the checking message after 1 second interval, testing purposes only
+    console.log(
+      'Checking ' + this.path + this.folder + ':167 for completion: ' + myC,
+    );
+
+    const executionData = await this.readFiles(
+      path,
+      folder,
+      myC,
+      timeout_value,
+      langName,
+    );
+    console.log('ATTEMPTING TO REMOVE: ' + fullPath);
+    console.log('------------------------------');
+    // await exec('rm -r ' + fullPath);
+
+    return executionData;
+  }
+
+  private async readFiles(
+    path: string,
+    folder: string,
+    myC: number,
+    timeout_value: number,
+    langName: string,
+  ): Promise<ExecutionResponse> {
+    try {
+      let completedData = fs.readFileSync(path + folder + '/completed', 'utf8');
+
+      //if file is not available yet and the file interval is not yet up carry on
+      // if (err && myC < timeout_value) {
+      //   return;
+      // } else
+      if (myC < timeout_value) {
+        //if file is found simply display a message and proceed
+        console.log('DONE');
+        //check for possible errors
+        let errors = fs.readFileSync(path + folder + '/errors', 'utf8');
+
+        if (!errors) errors = '';
+        console.log('Error file:205 ', errors);
+        console.log('Main File:206 ', completedData);
+
+        const lines = completedData
+          .toString()
+          .split('*-COMPILEBOX::ENDOFOUTPUT-*');
+        completedData = lines[0];
+
+        const time = lines[1];
+        console.log('Time:214 ', time);
+
+        //return the data to the calling functoin
+        return { data: completedData, time, errors };
+      } else {
+        //if time is up. Save an error message to the data variable
+        //Since the time is up, we take the partial output and return it.
+        let logfileData = fs.readFileSync(
+          path + folder + '/logfile.txt',
+          'utf8',
         );
-        myC = myC + 1;
-        fs.readFile(path + folder + '/completed', 'utf8', (err, data) => {
-          console.log(
-            '🚀 ~ file: docker-sandbox.ts:172 ~ DockerSandBox ~ fs.readFile ~ data:',
-            data,
-          );
-          console.log(
-            '🚀 ~ file: docker-sandbox.ts:178 ~ DockerSandBox ~ fs.readFile ~ err:',
-            err,
-          );
-          //if file is not available yet and the file interval is not yet up carry on
-          if (err && myC < timeout_value) {
-            reject(err);
-            return;
-          }
-          //if file is found simply display a message and proceed
-          else if (myC < timeout_value) {
-            console.log('DONE:186');
-            //check for possible errors
-            fs.readFile(path + folder + '/errors', 'utf8', (err, errors) => {
-              console.log(
-                '🚀 ~ file: docker-sandbox.ts:190 ~ DockerSandBox ~ fs.readFile ~ errors:',
-                errors,
-              );
-              if (err) {
-                reject(err);
-              }
-              if (!errors) errors = '';
-              console.log('Error file: ', errors);
-              console.log('Main File', data);
-              const lines = data
-                .toString()
-                .split('*-COMPILEBOX::ENDOFOUTPUT-*');
-              data = lines[0];
-              const time = lines[1];
-              console.log('Time: ', time);
-              resolve({ data, time, errors });
-            });
-            //return the data to the calling function
-          }
-          //if time is up. Save an error message to the data variable
-          else {
-            //Since the time is up, we take the partial output and return it.
-            fs.readFile(path + folder + '/logfile.txt', 'utf8', (err, data) => {
-              console.log(
-                '🚀 ~ file: docker-sandbox.ts:214 ~ DockerSandBox ~ fs.readFile ~ err:',
-                err,
-              );
-              console.log(
-                '🚀 ~ file: docker-sandbox.ts:218 ~ DockerSandBox ~ fs.readFile ~ data:',
-                data,
-              );
-              if (err) {
-                reject(err);
-              }
-              if (!data) data = '';
-              data += '\nExecution Timed Out';
-              console.log('Timed Out: ' + folder + ' ' + langName);
-              fs.readFile(path + folder + '/errors', 'utf8', (err, errors) => {
-                console.log(
-                  '🚀 ~ file: docker-sandbox.ts:229 ~ DockerSandBox ~ fs.readFile ~ err:',
-                  err,
-                );
 
-                console.log(
-                  '🚀 ~ file: docker-sandbox.ts:234 ~ DockerSandBox ~ fs.readFile ~ errors:',
-                  errors,
-                );
+        if (!logfileData) logfileData = '';
+        logfileData += '\nExecution Timed Out';
+        console.log('Timed Out:228 ' + folder + ' ' + langName);
 
-                if (err) {
-                  reject(err);
-                }
-                if (!errors) errors = '';
-                const lines = data.toString().split('*---*');
-                data = lines[0];
-                const time = lines[1];
-                console.log('Time: ', time);
-                resolve({ data, errors });
-              });
-            });
-          }
-          //now remove the temporary directory
-          console.log('ATTEMPTING TO REMOVE: ' + fullPath);
-          console.log('------------------------------');
-          // exec('rm -r ' + fullPath, (err, stdout, stderr) => {
-          //   console.log(
-          //     '🚀 ~ file: docker-sandbox.ts:228 ~ DockerSandBox ~ exec ~ stderr:',
-          //     stderr,
-          //   );
-          //   if (err) {
-          //     reject(stderr);
-          //   }
-          // });
-          clearInterval(intid);
-        });
-      }, 1000);
-    });
+        let errors = fs.readFileSync(path + folder + '/errors', 'utf8');
+
+        if (!errors) errors = '';
+        const lines = logfileData.toString().split('*---*');
+        logfileData = lines[0];
+        const time = lines[1];
+
+        console.log('Time:237 ', time);
+        console.log(time);
+
+        return { data: logfileData, errors };
+      }
+    } catch (error) {
+      console.log(
+        '🚀 ~ file: docker-sandbox.ts:244 ~ DockerSandBox ~ error:',
+        error,
+      );
+
+      return;
+    }
   }
 }

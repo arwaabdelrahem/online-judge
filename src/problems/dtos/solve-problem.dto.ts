@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
-export class SolveQuestionDto {
+export class SolveProblemDto {
   @ApiProperty()
   @IsNumber()
+  // @IsString()
   languageId: number;
 
   @ApiProperty()

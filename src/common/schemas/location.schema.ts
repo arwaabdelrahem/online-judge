@@ -20,4 +20,4 @@ export class Location {
   coordinates: number[];
 }
 
-const locationSchema = SchemaFactory.createForClass(Location);
+export const locationSchema = SchemaFactory.createForClass(Location);

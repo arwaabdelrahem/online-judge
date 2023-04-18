@@ -1,17 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class SolveProblemDto {
   @ApiProperty()
-  @IsNumber()
-  // @IsString()
-  languageId: number;
+  // @IsNumber()
+  @IsString()
+  languageId: string;
 
   @ApiProperty()
   @IsString()
   code: string;
 
-  @ApiProperty()
-  @IsString()
-  stdin: string;
+  // @ApiProperty()
+  // @IsString()
+  // stdin: string;
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import { CreateProblemDto } from './dtos/create-problem.dto';
 import { SolveProblemDto } from './dtos/solve-problem.dto';
 import { ProblemsService } from './problems.service';
@@ -12,8 +12,11 @@ export class ProblemsController {
     return this._problemsService.create(createBody);
   }
 
-  @Post('/solve')
-  async solve(@Body() body: SolveProblemDto) {
-    return this._problemsService.solve(body);
+  @Post('/:problemId/solve')
+  async solve(
+    @Param('problemId') problemId: string,
+    @Body() body: SolveProblemDto,
+  ) {
+    return this._problemsService.solve(problemId, body);
   }
 }

@@ -20,12 +20,12 @@ export class Problem {
   content: string;
 
   @Prop({ type: String })
-  input: string;
+  input?: string;
 
   @Prop({ type: String })
-  output: string;
+  output?: string;
 
-  @Prop({ type: TestCaseSchema })
+  @Prop({ type: [TestCaseSchema] })
   testCases?: TestCase[];
 
   @Prop({ type: String, enum: DificultyLevel })

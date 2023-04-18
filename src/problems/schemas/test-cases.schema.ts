@@ -8,7 +8,7 @@ export class TestCase {
   input: string;
 
   @Prop({ type: String })
-  output: string;
+  expectedOutput: string;
 }
 
 export const TestCaseSchema = SchemaFactory.createForClass(TestCase);

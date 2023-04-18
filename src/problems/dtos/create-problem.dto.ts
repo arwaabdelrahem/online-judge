@@ -9,11 +9,13 @@ export class CreateProblemDto {
   @IsString()
   content: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   input: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   output: string;
 

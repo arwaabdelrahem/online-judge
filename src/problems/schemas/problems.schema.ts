@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { DificultyLevel } from 'src/common/constants';
+import { DifficultyLevel } from 'src/common/constants';
 import { TestCase, TestCaseSchema } from './test-cases.schema';
 
 @Schema({
@@ -28,8 +28,8 @@ export class Problem {
   @Prop({ type: [TestCaseSchema] })
   testCases?: TestCase[];
 
-  @Prop({ type: String, enum: DificultyLevel })
-  dificultyLevel: DificultyLevel;
+  @Prop({ type: String, enum: DifficultyLevel })
+  difficultyLevel: DifficultyLevel;
 
   @Prop({ type: Number })
   points: number;

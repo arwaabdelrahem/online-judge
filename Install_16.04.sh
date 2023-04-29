@@ -19,10 +19,8 @@ echo "NodeJS setup Complete"
 ###########################
 # Start Docker
 ###########################
-# npm config set strict-ssl false
 chmod 777 ./src/problems/DockerTimeout.sh 
 chmod 777 ./src/problems/Payload/script.sh
-chmod 777 ./src/problems/Payload/javaRunner.sh
 chmod 777 UpdateDocker.sh
 
 systemctl restart docker

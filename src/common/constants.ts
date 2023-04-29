@@ -3,7 +3,7 @@ export enum DatabaseModelNames {
   PROBLEM_MODEL = 'problems',
 }
 
-export enum DificultyLevel {
+export enum DifficultyLevel {
   EASY = 'easy',
   MEDIUM = 'medium',
   HARD = 'hard',

@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { DificultyLevel } from 'src/common/constants';
+import { DifficultyLevel } from 'src/common/constants';
 import { CreateTestCaseDto } from './create-test-case.dto';
 import { Type } from 'class-transformer';
 
@@ -24,10 +24,10 @@ export class CreateProblemDto {
   @IsOptional()
   testCases?: CreateTestCaseDto[];
 
-  @ApiProperty({ enum: DificultyLevel })
+  @ApiProperty({ enum: DifficultyLevel })
   @IsString()
-  @IsEnum(DificultyLevel)
-  dificultyLevel: DificultyLevel;
+  @IsEnum(DifficultyLevel)
+  difficultyLevel: DifficultyLevel;
 
   @ApiProperty()
   @IsNumber()

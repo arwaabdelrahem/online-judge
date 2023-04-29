@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { LanguagesService } from './languages.service';
 import { CreateLanguageDto } from './dtos/create-language.dto';
+import { LanguagesService } from './languages.service';
 
 @Controller('languages')
 export class LanguagesController {

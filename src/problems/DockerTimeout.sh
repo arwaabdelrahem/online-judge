@@ -9,14 +9,10 @@ to=$1
 # Given that the 3 arguments provided to the script are available in $1, $2, $3, then a call to shift will make $2 the new $1.
 # A shift 2 will shift by two making new $1 the old $3
 shift
-echo "ECHOOO@ "$@""
 
 cont=$(docker run -d "$@")
-# cont=$(docker run --rm -d "$@")
-# timeout 60s docker wait b3d2e1cdd4375af4429c4b9e8cc3ef36918ce301b9b2686da7a57db98e30d916
 code=$(timeout "$to" docker wait "$cont" || true)
-echo cont $cont
-echo code $code
+# timeout 60s docker wait b3d2e1cdd4375af4429c4b9e8cc3ef36918ce301b9b2686da7a57db98e30d916
 # docker kill $cont &> /dev/null
 
 # -n option to disable the insertion of a new line.
@@ -36,4 +32,4 @@ docker logs $cont | sed 's/^/\t/'
 
 # Sometimes we will need to execute a command, but we don't want the output displayed on the screen
 # remove the container and discard output 
-docker rm $cont &> /dev/null
+# docker rm $cont &> /dev/null

@@ -1,4 +1,7 @@
-import { InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { exec } from 'promisify-child-process';
 import * as fs from 'fs';
 import { ExecutionResponse } from 'src/common/interfaces/execution-response';
@@ -90,16 +93,7 @@ export class DockerSandBox {
       path +
       folder;
 
-    console.log(
-      '🚀 ~ file: docker-sandbox.ts:94 ~ DockerSandBox ~ command:',
-      command,
-    );
-
     const { stderr } = await exec(command);
-    console.log(
-      '🚀 ~ file: docker-sandbox.ts:100 ~ DockerSandBox ~ stderr:',
-      stderr,
-    );
 
     if (stderr) {
       throw new InternalServerErrorException(stderr);
@@ -131,58 +125,63 @@ export class DockerSandBox {
     extra_arguments: string,
     langName: string,
   ): Promise<ExecutionResponse> {
-    const myC = 0; //variable to enforce the timeout_value
-    const fullPath = path + folder;
+    try {
+      const myC = 0; //variable to enforce the timeout_value
+      const fullPath = path + folder;
 
-    //this statement is what is executed
-    const st =
-      path +
-      'DockerTimeout.sh ' +
-      timeout_value +
-      "s -e 'NODE_PATH=/usr/local/lib/node_modules' -i -t -v  \"" +
-      path +
-      folder +
-      '":/usercode ' +
-      vm_name +
-      ' /usercode/script.sh ' +
-      compiler_name +
-      ' ' +
-      file_name +
-      ' ' +
-      output_command +
-      ' ' +
-      extra_arguments;
+      //this statement is what is executed
+      const st =
+        path +
+        'DockerTimeout.sh ' +
+        timeout_value +
+        "s -e 'NODE_PATH=/usr/local/lib/node_modules' -i -t -v  \"" +
+        path +
+        folder +
+        '":/usercode ' +
+        vm_name +
+        ' /usercode/script.sh ' +
+        compiler_name +
+        ' ' +
+        file_name +
+        ' ' +
+        output_command +
+        ' ' +
+        extra_arguments;
 
-    //log the statement in console
-    console.log('st:157', st);
+      //log the statement in console
+      console.log('DockerTimeout command:157', st);
 
-    //execute the Docker, This is done ASYNCHRONOUSLY
-    const { stderr } = await exec(st);
-    console.log(
-      '🚀 ~ file: docker-sandbox.ts:161 ~ DockerSandBox ~ stderr:',
-      stderr,
-    );
-    if (stderr) {
-      throw new InternalServerErrorException(stderr);
+      //execute the Docker, This is done ASYNCHRONOUSLY
+      const { stderr } = await exec(st);
+
+      if (stderr) {
+        console.log(
+          '🚀 ~ file: docker-sandbox.ts:154 ~ DockerSandBox ~ stderr:',
+          stderr,
+        );
+        return { data: '', errors: stderr as string };
+        // throw new InternalServerErrorException(stderr);
+      }
+      console.log('----------------------------------------------');
+      //   Displaying the checking message after 1 second interval, testing purposes only
+      console.log(
+        'Checking ' + this.path + this.folder + ':167 for completion: ' + myC,
+      );
+
+      const executionData = await this.readFiles(
+        path,
+        folder,
+        myC,
+        timeout_value,
+        langName,
+      );
+      console.log('ATTEMPTING TO REMOVE: ' + fullPath);
+      // await exec('rm -r ' + fullPath);
+
+      return executionData;
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
-    console.log('----------------------------------------------');
-    //   Displaying the checking message after 1 second interval, testing purposes only
-    console.log(
-      'Checking ' + this.path + this.folder + ':167 for completion: ' + myC,
-    );
-
-    const executionData = await this.readFiles(
-      path,
-      folder,
-      myC,
-      timeout_value,
-      langName,
-    );
-    console.log('ATTEMPTING TO REMOVE: ' + fullPath);
-    console.log('------------------------------');
-    // await exec('rm -r ' + fullPath);
-
-    return executionData;
   }
 
   private async readFiles(
@@ -201,23 +200,21 @@ export class DockerSandBox {
       // } else
       if (myC < timeout_value) {
         //if file is found simply display a message and proceed
-        console.log('DONE');
         //check for possible errors
         let errors = fs.readFileSync(path + folder + '/errors', 'utf8');
 
         if (!errors) errors = '';
-        console.log('Error file:205 ', errors);
-        console.log('Main File:206 ', completedData);
+        // console.log('Error file:205 ', errors);
+        // console.log('Main File:206 ', completedData);
 
         const lines = completedData
           .toString()
           .split('*-COMPILEBOX::ENDOFOUTPUT-*');
+
         completedData = lines[0];
-
         const time = lines[1];
-        console.log('Time:214 ', time);
 
-        //return the data to the calling functoin
+        //return the data to the calling function
         return { data: completedData, time, errors };
       } else {
         //if time is up. Save an error message to the data variable
@@ -238,18 +235,10 @@ export class DockerSandBox {
         logfileData = lines[0];
         const time = lines[1];
 
-        console.log('Time:237 ', time);
-        console.log(time);
-
-        return { data: logfileData, errors };
+        return { data: logfileData, time, errors };
       }
     } catch (error) {
-      console.log(
-        '🚀 ~ file: docker-sandbox.ts:244 ~ DockerSandBox ~ error:',
-        error,
-      );
-
-      return;
+      return { data: '', errors: error.message };
     }
   }
 }

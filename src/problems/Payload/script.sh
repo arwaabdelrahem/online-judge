@@ -23,7 +23,7 @@ addtionalArg=$4
 #	- The output of the stream is then sent to respective files
 #	
 #	
-#	- if third arguemtn is empty Branch 1 is followed. An interpretor was called
+#	- if third argument is empty Branch 1 is followed. An interpretor was called
 #	- else Branch2 is followed, a compiler was invoked
 #	- In Branch2. We first check if the compile operation was a success (code returned 0)
 #	
@@ -36,14 +36,19 @@ addtionalArg=$4
 #	- Upon finding this file, the NodeJS Api returns its content to the browser and deletes the folder
 #
 ########################################################################
+# stdin (0) - Standard in
+# stdout (1) - Standard out
+# stderr (2) - Standard error
 
+# Redirect stdout to $logfile
 exec  1> $"/usercode/logfile.txt"
+# Redirect stderr to $errors
 exec  2> $"/usercode/errors"
-#3>&1 4>&2 >
 
 START=$(date +%s.%2N)
 #Branch 1
 if [ "$output" = "" ]; then
+# The tee command, reads standard input, then writes the output of a program to standard output
     $compiler /usercode/$file -< $"/usercode/inputFile" #| tee /usercode/output.txt
 #Branch 2
 else
@@ -61,10 +66,6 @@ else
 	fi
 fi
 
-#exec 1>&3 2>&4
-
-#head -100 /usercode/logfile.txt
-#touch /usercode/completed
 END=$(date +%s.%2N)
 # bc stands for Basic Calculator
 # is a command in Bash that is used to provide the functionality of a scientific calculator within a Bash script

@@ -13,6 +13,7 @@ echo "ECHOOO@ "$@""
 
 cont=$(docker run -d "$@")
 # cont=$(docker run --rm -d "$@")
+# timeout 60s docker wait b3d2e1cdd4375af4429c4b9e8cc3ef36918ce301b9b2686da7a57db98e30d916
 code=$(timeout "$to" docker wait "$cont" || true)
 echo cont $cont
 echo code $code
@@ -22,7 +23,7 @@ echo code $code
 echo -n 'status: ' # Result=> status: timeout OR status: exited:0
 
 # -z => returns true if length of $code is zero
-# if $code is true"length zero" then timeout
+# if $code is true "length zero" then timeout
 if [ -z "$code" ]; then
     echo timeout
 else

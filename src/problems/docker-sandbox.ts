@@ -139,7 +139,7 @@ export class DockerSandBox {
       path +
       'DockerTimeout.sh ' +
       timeout_value +
-      "s -u mysql -e 'NODE_PATH=/usr/local/lib/node_modules' -i -t -v  \"" +
+      "s -e 'NODE_PATH=/usr/local/lib/node_modules' -i -t -v  \"" +
       path +
       folder +
       '":/usercode ' +

@@ -8,3 +8,8 @@ export enum DifficultyLevel {
   MEDIUM = 'medium',
   HARD = 'hard',
 }
+
+export enum DeepstreamEventsName {
+  FAILED_TEST_CASE = 'oj-failed-test-case',
+  PASSED_TEST_CASE = 'oj-passed-test-case',
+}

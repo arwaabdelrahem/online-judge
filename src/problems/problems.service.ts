@@ -1,18 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomBytes } from 'crypto';
+import { DeepstreamEventsName } from 'src/common/constants';
 import { LanguagesService } from 'src/languages/languages.service';
+import { Language } from 'src/languages/schemas/languages.schema';
+import { RealtimeService } from 'src/realtime/realtime.service';
 import { DockerSandBox } from './docker-sandbox';
 import { CreateProblemDto } from './dtos/create-problem.dto';
 import { SolveProblemDto } from './dtos/solve-problem.dto';
 import { ProblemsRepo } from './repos/problems.repo';
 import { Problem } from './schemas/problems.schema';
-import { Language } from 'src/languages/schemas/languages.schema';
 
 @Injectable()
 export class ProblemsService {
   constructor(
     private _problemsRepo: ProblemsRepo,
     private _languagesService: LanguagesService,
+    private _realtimeService: RealtimeService,
   ) {}
 
   async create(createBody: CreateProblemDto) {
@@ -96,9 +99,31 @@ export class ProblemsService {
           });
 
         if (!expectedOutput.every((val, index) => val === output[index])) {
+          //failed test case
           passedTestCases.push(false);
+          this._realtimeService.eventEmit(
+            DeepstreamEventsName.FAILED_TEST_CASE,
+            {
+              message: 'test case failed',
+              input,
+              output,
+              expectedOutput,
+              errors,
+            },
+          );
         } else {
+          //passed test case
           passedTestCases.push(true);
+          this._realtimeService.eventEmit(
+            DeepstreamEventsName.PASSED_TEST_CASE,
+            {
+              message: 'test case passed',
+              input,
+              output,
+              expectedOutput,
+              errors,
+            },
+          );
         }
 
         return {

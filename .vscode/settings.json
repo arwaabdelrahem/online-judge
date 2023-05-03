@@ -1,0 +1,3 @@
+{
+  "conventionalCommits.scopes": ["emit test case events with socket.io"]
+}

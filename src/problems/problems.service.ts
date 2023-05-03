@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { DeepstreamEventsName } from 'src/common/constants';
+import { EventsName } from 'src/common/constants';
 import { LanguagesService } from 'src/languages/languages.service';
 import { Language } from 'src/languages/schemas/languages.schema';
 import { RealtimeService } from 'src/realtime/realtime.service';
+import { SocketGateway } from 'src/problems/socket.gateway';
 import { DockerSandBox } from './docker-sandbox';
 import { CreateProblemDto } from './dtos/create-problem.dto';
 import { SolveProblemDto } from './dtos/solve-problem.dto';
@@ -16,6 +17,7 @@ export class ProblemsService {
     private _problemsRepo: ProblemsRepo,
     private _languagesService: LanguagesService,
     private _realtimeService: RealtimeService,
+    private _gatewayService: SocketGateway,
   ) {}
 
   async create(createBody: CreateProblemDto) {
@@ -101,29 +103,43 @@ export class ProblemsService {
         if (!expectedOutput.every((val, index) => val === output[index])) {
           //failed test case
           passedTestCases.push(false);
-          this._realtimeService.eventEmit(
-            DeepstreamEventsName.FAILED_TEST_CASE,
-            {
-              message: 'test case failed',
-              input,
-              output,
-              expectedOutput,
-              errors,
-            },
-          );
+          // this._realtimeService.eventEmit(
+          //   EventsName.FAILED_TEST_CASE,
+          //   {
+          //     message: 'test case failed',
+          //     input,
+          //     output,
+          //     expectedOutput,
+          //     errors,
+          //   },
+          // );
+          this._gatewayService.socketEmitEvent(EventsName.FAILED_TEST_CASE, {
+            message: 'test case failed',
+            input,
+            output,
+            expectedOutput,
+            errors,
+          });
         } else {
           //passed test case
           passedTestCases.push(true);
-          this._realtimeService.eventEmit(
-            DeepstreamEventsName.PASSED_TEST_CASE,
-            {
-              message: 'test case passed',
-              input,
-              output,
-              expectedOutput,
-              errors,
-            },
-          );
+          // this._realtimeService.eventEmit(
+          //   EventsName.PASSED_TEST_CASE,
+          //   {
+          //     message: 'test case passed',
+          //     input,
+          //     output,
+          //     expectedOutput,
+          //     errors,
+          //   },
+          // );
+          this._gatewayService.socketEmitEvent(EventsName.PASSED_TEST_CASE, {
+            message: 'test case passed',
+            input,
+            output,
+            expectedOutput,
+            errors,
+          });
         }
 
         return {

@@ -28,7 +28,9 @@
     "@nestjs/jwt": "^10.0.2",
     "@nestjs/mongoose": "^9.2.2",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/platform-socket.io": "^9.1.6",
     "@nestjs/swagger": "^6.3.0",
+    "@nestjs/websockets": "^9.1.6",
     "@types/bcrypt": "^5.0.0",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
@@ -39,7 +41,8 @@
     "promisify-child-process": "^4.1.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "socket.io": "^4.6.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

@@ -3,7 +3,7 @@ import * as deepstream from 'deepstream.io-client-js';
 
 @Injectable()
 export class RealtimeService implements OnModuleInit {
-  private _client;
+  private _client: deepstreamIO.deepstreamQuarantine;
 
   async onModuleInit() {
     const options = {

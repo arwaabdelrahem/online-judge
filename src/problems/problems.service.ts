@@ -103,16 +103,13 @@ export class ProblemsService {
         if (!expectedOutput.every((val, index) => val === output[index])) {
           //failed test case
           passedTestCases.push(false);
-          // this._realtimeService.eventEmit(
-          //   EventsName.FAILED_TEST_CASE,
-          //   {
-          //     message: 'test case failed',
-          //     input,
-          //     output,
-          //     expectedOutput,
-          //     errors,
-          //   },
-          // );
+          this._realtimeService.eventEmit(EventsName.FAILED_TEST_CASE, {
+            message: 'test case failed',
+            input,
+            output,
+            expectedOutput,
+            errors,
+          });
           this._gatewayService.socketEmitEvent(EventsName.FAILED_TEST_CASE, {
             message: 'test case failed',
             input,
@@ -123,16 +120,13 @@ export class ProblemsService {
         } else {
           //passed test case
           passedTestCases.push(true);
-          // this._realtimeService.eventEmit(
-          //   EventsName.PASSED_TEST_CASE,
-          //   {
-          //     message: 'test case passed',
-          //     input,
-          //     output,
-          //     expectedOutput,
-          //     errors,
-          //   },
-          // );
+          this._realtimeService.eventEmit(EventsName.PASSED_TEST_CASE, {
+            message: 'test case passed',
+            input,
+            output,
+            expectedOutput,
+            errors,
+          });
           this._gatewayService.socketEmitEvent(EventsName.PASSED_TEST_CASE, {
             message: 'test case passed',
             input,

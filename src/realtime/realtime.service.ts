@@ -16,7 +16,16 @@ export class RealtimeService implements OnModuleInit {
 
     this._client = deepstream('localhost:6020', options);
 
-    this._client.on('error', (err) => console.log('Deepsteam Error: ', err));
+    this._client.on('connectionStateChanged', (connection) => {
+      console.log(
+        '🚀 ~ file: realtime.service.ts:27 ~ RealtimeService ~ this._client.on ~ connection:',
+        connection,
+      );
+      if (connection === 'OPEN')
+        console.log('[!] Deepstream Connected: ', 'localhost:6020');
+    });
+
+    this._client.on('error', (err) => console.log('Deepstream Error: ', err));
 
     this._client.login();
   }

@@ -32,4 +32,4 @@ docker logs $cont | sed 's/^/\t/'
 
 # Sometimes we will need to execute a command, but we don't want the output displayed on the screen
 # remove the container and discard output 
-# docker rm $cont &> /dev/null
+docker rm $cont &> /dev/null

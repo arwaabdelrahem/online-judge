@@ -18,21 +18,11 @@ export class SocketGateway {
 
   @SubscribeMessage(EventsName.FAILED_TEST_CASE)
   public async failedTestCaseListen(@MessageBody() data: string) {
-    console.log(
-      '🚀 ~ file: app.gateway.ts:20 ~ AppGateway ~ joinRoom ~ value:',
-      data,
-    );
-
     return data;
   }
 
   @SubscribeMessage(EventsName.PASSED_TEST_CASE)
   public async passedTestCaseListen(@MessageBody() data: string) {
-    console.log(
-      '🚀 ~ file: app.gateway.ts:20 ~ AppGateway ~ joinRoom ~ value:',
-      data,
-    );
-
     return data;
   }
 }

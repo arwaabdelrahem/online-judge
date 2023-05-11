@@ -2,6 +2,7 @@ version: '2'
 
 services:
   deepstream:
+    restart: always
     image: deepstreamio/deepstream.io
     ports:
       - '6020:6020'
@@ -22,11 +23,11 @@ services:
 
   router1:
     image: mongo
+    restart: always
     container_name: mongo-router1
-    command: mongos --port 27017 --configdb rs-config-server/configsvr01:27017,configsvr02:27017,configsvr03:27017 --bind_ip_all
+    command: mongos --port 27017 --configdb config/configsvr01:27017 --bind_ip_all
     ports:
       - 27017:27017
-    restart: always
     volumes:
       - ./scripts:/scripts
       - mongodb_cluster_router01_db:/data/db
@@ -35,169 +36,80 @@ services:
   ## Config Servers
   configsvr:
     image: mongo
+    restart: always
     container_name: mongo-config
     volumes:
       - ./scripts:/scripts
       - mongodb_cluster_configsvr01_db:/data/db
       - mongodb_cluster_configsvr01_config:/data/configdb
-    restart: always
     depends_on:
       - configsvr01
-      - configsvr02
-      - configsvr03
     entrypoint: ['bash', '/scripts/mongo-server.sh']
 
   configsvr01:
     image: mongo
+    restart: always
     container_name: mongo-config-01
-    command: mongod --port 27017 --configsvr --replSet rs-config-server
+    command: mongod --port 27017 --configsvr --replSet config
     volumes:
       - ./scripts:/scripts
       - mongodb_cluster_configsvr01_db:/data/db
       - mongodb_cluster_configsvr01_config:/data/configdb
     ports:
       - 27119:27017
-    restart: always
     depends_on:
       - shard01-a
       - shard02-a
 
-  configsvr02:
-    image: mongo
-    container_name: mongo-config-02
-    command: mongod --port 27017 --configsvr --replSet rs-config-server
-    volumes:
-      - ./scripts:/scripts
-      - mongodb_cluster_configsvr02_db:/data/db
-      - mongodb_cluster_configsvr02_config:/data/configdb
-    ports:
-      - 27120:27017
-    restart: always
-    depends_on:
-      - configsvr01
-
-  configsvr03:
-    image: mongo
-    container_name: mongo-config-03
-    command: mongod --port 27017 --configsvr --replSet rs-config-server
-    volumes:
-      - ./scripts:/scripts
-      - mongodb_cluster_configsvr03_db:/data/db
-      - mongodb_cluster_configsvr03_config:/data/configdb
-    ports:
-      - 27121:27017
-    restart: always
-    depends_on:
-      - configsvr02
-
-  ## Shards
-  ## Shards 01
+  ## Shard 1
   shard1:
     image: mongo
+    restart: always
     container_name: shard1
     volumes:
       - ./scripts:/scripts
       - mongodb_cluster_shard01_a_db:/data/db
       - mongodb_cluster_shard01_a_config:/data/configdb
-    restart: always
     depends_on:
       - shard01-a
-      - shard01-b
-      - shard01-c
     entrypoint: ['bash', '/scripts/mongo-shard1.sh']
 
   shard01-a:
     image: mongo
+    restart: always
     container_name: shard1-1
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-01
+    command: mongod --port 27017 --shardsvr --replSet shard1
     volumes:
       - ./scripts:/scripts
       - mongodb_cluster_shard01_a_db:/data/db
       - mongodb_cluster_shard01_a_config:/data/configdb
     ports:
       - 27122:27017
-    restart: always
-    depends_on:
-      - shard01-b
-      - shard01-c
 
-  shard01-b:
-    image: mongo
-    container_name: shard1-2
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-01
-    volumes:
-      - ./scripts:/scripts
-      - mongodb_cluster_shard01_b_db:/data/db
-      - mongodb_cluster_shard01_b_config:/data/configdb
-    ports:
-      - 27123:27017
-    restart: always
-
-  shard01-c:
-    image: mongo
-    container_name: shard1-3
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-01
-    volumes:
-      - ./scripts:/scripts
-      - mongodb_cluster_shard01_c_db:/data/db
-      - mongodb_cluster_shard01_c_config:/data/configdb
-    ports:
-      - 27124:27017
-    restart: always
-
-  ## Shards 02
+  ## Shard 2
   shard2:
     image: mongo
+    restart: always
     container_name: shard2
     volumes:
       - ./scripts:/scripts
       - mongodb_cluster_shard02_a_db:/data/db
       - mongodb_cluster_shard02_a_config:/data/configdb
-    restart: always
     depends_on:
       - shard02-a
-      - shard02-b
-      - shard02-c
     entrypoint: ['bash', '/scripts/mongo-shard2.sh']
 
   shard02-a:
     image: mongo
+    restart: always
     container_name: shard2-1
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-02
+    command: mongod --port 27017 --shardsvr --replSet shard2
     volumes:
       - ./scripts:/scripts
       - mongodb_cluster_shard02_a_db:/data/db
       - mongodb_cluster_shard02_a_config:/data/configdb
     ports:
       - 27125:27017
-    restart: always
-    depends_on:
-      - shard02-b
-      - shard02-c
-
-  shard02-b:
-    image: mongo
-    container_name: shard2-2
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-02
-    volumes:
-      - ./scripts:/scripts
-      - mongodb_cluster_shard02_b_db:/data/db
-      - mongodb_cluster_shard02_b_config:/data/configdb
-    ports:
-      - 27126:27017
-    restart: always
-
-  shard02-c:
-    image: mongo
-    container_name: shard2-3
-    command: mongod --port 27017 --shardsvr --replSet rs-shard-02
-    volumes:
-      - ./scripts:/scripts
-      - mongodb_cluster_shard02_c_db:/data/db
-      - mongodb_cluster_shard02_c_config:/data/configdb
-    ports:
-      - 27127:27017
-    restart: always
 
 volumes:
   mongodb_cluster_router01_db:
@@ -206,26 +118,8 @@ volumes:
   mongodb_cluster_configsvr01_db:
   mongodb_cluster_configsvr01_config:
 
-  mongodb_cluster_configsvr02_db:
-  mongodb_cluster_configsvr02_config:
-
-  mongodb_cluster_configsvr03_db:
-  mongodb_cluster_configsvr03_config:
-
   mongodb_cluster_shard01_a_db:
   mongodb_cluster_shard01_a_config:
 
-  mongodb_cluster_shard01_b_db:
-  mongodb_cluster_shard01_b_config:
-
-  mongodb_cluster_shard01_c_db:
-  mongodb_cluster_shard01_c_config:
-
   mongodb_cluster_shard02_a_db:
   mongodb_cluster_shard02_a_config:
-
-  mongodb_cluster_shard02_b_db:
-  mongodb_cluster_shard02_b_config:
-
-  mongodb_cluster_shard02_c_db:
-  mongodb_cluster_shard02_c_config:

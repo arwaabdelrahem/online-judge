@@ -8,12 +8,10 @@ echo "Connection finished"
 echo "Creating replica set"
 mongosh --host shard1-1 <<EOF
 rs.initiate({
-  _id: 'rs-shard-01',
+  _id: 'shard1',
   version: 1,
   members: [
     { _id: 0, host: 'shard01-a:27017' },
-    { _id: 1, host: 'shard01-b:27017' },
-    { _id: 2, host: 'shard01-c:27017' },
   ],
 })
 EOF

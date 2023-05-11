@@ -10,21 +10,43 @@ services:
 
   mongos:
     image: mongo
-    container_name: mongo-router
-    command: mongos --port 27017 --configdb rs-config-server/configsvr01:27017,configsvr02:27017,configsvr03:27017 --bind_ip_all
-    ports:
-      - 27117:27017
+    container_name: mongos
     restart: always
     volumes:
       - ./scripts:/scripts
       - mongodb_cluster_router01_db:/data/db
       - mongodb_cluster_router01_config:/data/configdb
     depends_on:
-      - configsvr03
-      - shard01-a
-    entrypoint: ['bash', 'mongosh < /scripts/mongo-router.sh']
+      - router1
+    entrypoint: ['bash', '/scripts/mongo-router.sh']
+
+  router1:
+    image: mongo
+    container_name: mongo-router1
+    command: mongos --port 27017 --configdb rs-config-server/configsvr01:27017,configsvr02:27017,configsvr03:27017 --bind_ip_all
+    ports:
+      - 27017:27017
+    restart: always
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_router01_db:/data/db
+      - mongodb_cluster_router01_config:/data/configdb
 
   ## Config Servers
+  configsvr:
+    image: mongo
+    container_name: mongo-config
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_configsvr01_db:/data/db
+      - mongodb_cluster_configsvr01_config:/data/configdb
+    restart: always
+    depends_on:
+      - configsvr01
+      - configsvr02
+      - configsvr03
+    entrypoint: ['bash', '/scripts/mongo-server.sh']
+
   configsvr01:
     image: mongo
     container_name: mongo-config-01
@@ -67,10 +89,22 @@ services:
     restart: always
     depends_on:
       - configsvr02
-    entrypoint: ['bash', 'mongosh < /scripts/mongo-server.sh']
 
   ## Shards
   ## Shards 01
+  shard1:
+    image: mongo
+    container_name: shard1
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_shard01_a_db:/data/db
+      - mongodb_cluster_shard01_a_config:/data/configdb
+    restart: always
+    depends_on:
+      - shard01-a
+      - shard01-b
+      - shard01-c
+    entrypoint: ['bash', '/scripts/mongo-shard1.sh']
 
   shard01-a:
     image: mongo
@@ -86,7 +120,6 @@ services:
     depends_on:
       - shard01-b
       - shard01-c
-    entrypoint: ['bash', 'mongosh < /scripts/mongo-shard1.sh']
 
   shard01-b:
     image: mongo
@@ -113,6 +146,20 @@ services:
     restart: always
 
   ## Shards 02
+  shard2:
+    image: mongo
+    container_name: shard2
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_shard02_a_db:/data/db
+      - mongodb_cluster_shard02_a_config:/data/configdb
+    restart: always
+    depends_on:
+      - shard02-a
+      - shard02-b
+      - shard02-c
+    entrypoint: ['bash', '/scripts/mongo-shard2.sh']
+
   shard02-a:
     image: mongo
     container_name: shard2-1
@@ -127,7 +174,6 @@ services:
     depends_on:
       - shard02-b
       - shard02-c
-    entrypoint: ['bash', 'mongosh < /scripts/mongo-shard2.sh']
 
   shard02-b:
     image: mongo

@@ -1,14 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import envDevelopment from './common/config/env.development';
-import envProduction from './common/config/env.production';
-import { LanguagesModule } from './languages/languages.module';
-import { ProblemsModule } from './problems/problems.module';
-import { ProductsModule } from './products/products.module';
-import { RealtimeModule } from './realtime/realtime.module';
+import envDevelopment from 'src/common/config/env.development';
+import envProduction from 'src/common/config/env.production';
+import { ProductsModule } from 'src/products/products.module';
+import { ChangeStreamService } from './change-stream.service';
 
 const env = process.env.NODE_ENV;
 const load = !env ? [envDevelopment] : [envProduction];
@@ -30,12 +26,8 @@ const load = !env ? [envDevelopment] : [envProduction];
         },
       }),
     }),
-    ProblemsModule,
-    LanguagesModule,
-    RealtimeModule,
     ProductsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [ChangeStreamService],
 })
-export class AppModule {}
+export class ChangeStreamModule {}

@@ -1,3 +1,4 @@
+import { ChangeStream, ChangeStreamOptions } from 'mongodb';
 import { Document, FilterQuery, Model, UpdateQuery } from 'mongoose';
 
 export type IdType = string | number;
@@ -48,5 +49,12 @@ export class BaseRepo<
     );
 
     return document;
+  }
+
+  watch(
+    pipeline?: Array<Record<string, unknown>>,
+    options?: ChangeStreamOptions,
+  ): ChangeStream<any> {
+    return this._model.watch(pipeline, options);
   }
 }

@@ -53,5 +53,13 @@ export class ChangeStreamService implements OnApplicationBootstrap {
       const resumeToken = EJSON.stringify(change._id);
       await storage.setItem(CS_TOKEN_KEY, resumeToken);
     });
+    // const change = await changeStream.next();
+    // console.log(
+    //   '🚀 ~ file: change-stream.service.ts:57 ~ ChangeStreamService ~ changeStream ~ change:',
+    //   change,
+    // );
+
+    // const resumeToken = EJSON.stringify(change._id);
+    // await storage.setItem(CS_TOKEN_KEY, resumeToken);
   }
 }

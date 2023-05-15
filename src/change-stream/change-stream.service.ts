@@ -16,7 +16,9 @@ export class ChangeStreamService implements OnApplicationBootstrap {
     const matchStages = [
       {
         $match: {
-          // 'fullDocument.name': 'apple', // necessary to capture inserts
+          'fullDocument.quantity': {
+            $lte: 10,
+          },
         },
       },
     ];

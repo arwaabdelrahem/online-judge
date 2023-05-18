@@ -8,6 +8,7 @@ import { ProblemsController } from './problems.controller';
 import { ProblemsService } from './problems.service';
 import { ProblemsRepo } from './repos/problems.repo';
 import { ProblemSchema } from './schemas/problems.schema';
+import { ApacheKafkaModule } from 'src/apache-kafka/apache-kafka.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ProblemSchema } from './schemas/problems.schema';
     ]),
     LanguagesModule,
     RealtimeModule,
+    ApacheKafkaModule,
   ],
   controllers: [ProblemsController],
   providers: [ProblemsService, ProblemsRepo, SocketGateway],

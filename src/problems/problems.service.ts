@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { EventsName } from 'src/common/constants';
+import { ApacheKafkaService } from 'src/apache-kafka/apache-kafka.service';
+import { EventsName, KafkaTopicsName } from 'src/common/constants';
 import { LanguagesService } from 'src/languages/languages.service';
 import { Language } from 'src/languages/schemas/languages.schema';
-import { RealtimeService } from 'src/realtime/realtime.service';
 import { SocketGateway } from 'src/problems/socket.gateway';
+import { RealtimeService } from 'src/realtime/realtime.service';
 import { DockerSandBox } from './docker-sandbox';
 import { CreateProblemDto } from './dtos/create-problem.dto';
 import { SolveProblemDto } from './dtos/solve-problem.dto';
@@ -18,6 +19,7 @@ export class ProblemsService {
     private _languagesService: LanguagesService,
     private _realtimeService: RealtimeService,
     private _gatewayService: SocketGateway,
+    private _apacheKafkaService: ApacheKafkaService,
   ) {}
 
   async create(createBody: CreateProblemDto) {
@@ -117,6 +119,10 @@ export class ProblemsService {
             expectedOutput,
             errors,
           });
+          this._apacheKafkaService.publish(
+            KafkaTopicsName.TEST_CASES_TOPIC,
+            'test case failed',
+          );
         } else {
           //passed test case
           passedTestCases.push(true);
@@ -134,6 +140,10 @@ export class ProblemsService {
             expectedOutput,
             errors,
           });
+          this._apacheKafkaService.publish(
+            KafkaTopicsName.TEST_CASES_TOPIC,
+            'test case passed',
+          );
         }
 
         return {

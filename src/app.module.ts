@@ -8,6 +8,7 @@ import envProduction from './common/config/env.production';
 import { LanguagesModule } from './languages/languages.module';
 import { ProblemsModule } from './problems/problems.module';
 import { RealtimeModule } from './realtime/realtime.module';
+import { ApacheKafkaModule } from './apache-kafka/apache-kafka.module';
 
 const env = process.env.NODE_ENV;
 const load = !env ? [envDevelopment] : [envProduction];
@@ -32,6 +33,7 @@ const load = !env ? [envDevelopment] : [envProduction];
     ProblemsModule,
     LanguagesModule,
     RealtimeModule,
+    ApacheKafkaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

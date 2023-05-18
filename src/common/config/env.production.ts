@@ -26,4 +26,8 @@ export default () => ({
     accessKeyId: 'AKIA5W5XQAXEJGEMSSKG',
     secretAccessKey: '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',
   },
+
+  kafka: {
+    brokers: ['localhost:29092'],
+  },
 });

@@ -1,7 +1,8 @@
 export enum DatabaseModelNames {
   LANGUAGE_MODEL = 'languages',
   PROBLEM_MODEL = 'problems',
-  PRODUCT_MODEL = 'product',
+  PRODUCT_MODEL = 'products',
+  USER_MODEL = 'users',
 }
 
 export enum DifficultyLevel {

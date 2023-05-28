@@ -10,6 +10,7 @@ import { ProblemsModule } from './problems/problems.module';
 import { ProductsModule } from './products/products.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { ApacheKafkaModule } from './apache-kafka/apache-kafka.module';
+import { UsersModule } from './users/users.module';
 
 const env = process.env.NODE_ENV;
 const load = !env ? [envDevelopment] : [envProduction];
@@ -36,6 +37,7 @@ const load = !env ? [envDevelopment] : [envProduction];
     RealtimeModule,
     ApacheKafkaModule,
     ProductsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import envDevelopment from 'src/common/config/env.development';
 import envProduction from 'src/common/config/env.production';
 import { ProductsModule } from 'src/products/products.module';
+import { UsersModule } from 'src/users/users.module';
 import { ChangeStreamService } from './change-stream.service';
 
 const env = process.env.NODE_ENV;
@@ -27,6 +28,7 @@ const load = !env ? [envDevelopment] : [envProduction];
       }),
     }),
     ProductsModule,
+    UsersModule,
   ],
   providers: [ChangeStreamService],
 })

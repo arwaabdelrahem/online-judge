@@ -1,5 +1,6 @@
 export default () => ({
-  DB: 'mongodb+srv://Arwaabdelrahem:qUIqRK0nuE7OjiWi@cluster1.bgufy1w.mongodb.net/online-judge?retryWrites=true&w=majority',
+  // DB: 'mongodb+srv://Arwaabdelrahem:qUIqRK0nuE7OjiWi@cluster1.bgufy1w.mongodb.net/online-judge?retryWrites=true&w=majority',
+  DB: 'mongodb://localhost:27017/online-judge',
   slackWebhooks:
     'https://hooks.slack.com/services/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',
   jwtSecret: 'secretKey',

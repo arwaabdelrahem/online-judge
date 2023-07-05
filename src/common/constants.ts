@@ -31,3 +31,7 @@ export enum KafkaTopicsName {
 export enum KafkaClientsName {
   TEST_CASES = 'test-cases',
 }
+
+export enum QueuesName {
+  PROBLEMS_QUEUE = 'problems-queue',
+}

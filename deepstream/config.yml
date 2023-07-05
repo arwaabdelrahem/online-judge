@@ -236,7 +236,7 @@ logger:
 storage:
   name: mongodb
   options:
-    connectionString: 'mongodb+srv://Arwaabdelrahem:qUIqRK0nuE7OjiWi@cluster1.bgufy1w.mongodb.net/online-judge?retryWrites=true&w=majority'
+    connectionString: 'mongodb+srv://Arwaabdelrahem:AOlKUPBeQqrPHpOr@cluster1.bgufy1w.mongodb.net/flowers?retryWrites=true&w=majority'
     db: online-judge
     defaultCollection: deepstream
     splitChar: /

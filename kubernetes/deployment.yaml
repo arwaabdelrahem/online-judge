@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: online-judge-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: online-judge-app
+  template:
+    metadata:
+      labels:
+        app: online-judge-app
+    spec:
+      containers:
+        - name: online-judge
+          image: registry.digitalocean.com/online-judge/api:latest
+          envFrom:
+            - configMapRef:
+                name: env
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: online-judge-service
+spec:
+  selector:
+    app: online-judge-app
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

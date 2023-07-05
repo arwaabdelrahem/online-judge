@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: online-judge-ingress
+  # annotations:
+  #   cert-manager.io/issuer: letsencrypt-nginx
+spec:
+  # tls:
+  #   - hosts:
+  #       - backend.arwapro.online
+  #     secretName: letsencrypt-nginx
+  rules:
+    - host: backend.arwapro.online
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: online-judge-service
+                port:
+                  number: 8000
+  ingressClassName: nginx

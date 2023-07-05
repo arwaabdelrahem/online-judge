@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { randomBytes } from 'crypto';
-import { ApacheKafkaService } from 'src/apache-kafka/apache-kafka.service';
-import { EventsName, KafkaTopicsName } from 'src/common/constants';
+import { EventsName } from 'src/common/constants';
 import { LanguagesService } from 'src/languages/languages.service';
 import { Language } from 'src/languages/schemas/languages.schema';
 import { SocketGateway } from 'src/problems/socket.gateway';
@@ -19,7 +19,7 @@ export class ProblemsService {
     private _languagesService: LanguagesService,
     private _realtimeService: RealtimeService,
     private _gatewayService: SocketGateway,
-    private _apacheKafkaService: ApacheKafkaService,
+    @Inject('PROBLEM_SERVICE') private client: ClientProxy,
   ) {}
 
   async create(createBody: CreateProblemDto) {
@@ -29,7 +29,15 @@ export class ProblemsService {
   }
 
   async findById(problemId: string) {
-    const problem = await this._problemsRepo.findById(problemId);
+    console.log(
+      '🚀 ~ file: problems.service.ts:34 ~ ProblemsService ~ findById ~ problemId:',
+      problemId,
+    );
+    const problem = await this._problemsRepo.find({});
+    console.log(
+      '🚀 ~ file: problems.service.ts:35 ~ ProblemsService ~ findById ~ problem:',
+      problem,
+    );
 
     if (!problem) {
       throw new NotFoundException('problem not found');
@@ -41,10 +49,48 @@ export class ProblemsService {
   async solve(problemId: string, body: SolveProblemDto) {
     const { languageId, code } = body;
 
-    const problem = await this.findById(problemId);
-    const language = await this._languagesService.findById(languageId);
+    // const problem = await this.findById(problemId);
+    // const language = await this._languagesService.findById(languageId);
 
-    const response = await this.validateUserCode(problem, language, code);
+    // const problem = {
+    //   content: 'CALC AREA',
+    //   testCases: [
+    //     { input: '3\n4.5', expectedOutput: '13.5\n15' },
+    //     {
+    //       input: '311.123\n499.997',
+    //       expectedOutput: '155560.566631\n1622.24',
+    //     },
+    //   ],
+    //   difficultyLevel: 'hard',
+    //   points: 30,
+    // };
+
+    const problem = {
+      content:
+        "A line of code that prints 'Hello, World!' on a new line is provided in the editor.",
+      testCases: [
+        {
+          input: '',
+          expectedOutput: 'Hello, World!',
+        },
+      ],
+      difficultyLevel: 'easy',
+      points: 10,
+    };
+
+    const language = {
+      compilerName: 'nodejs',
+      fileName: 'file.js',
+      outputCommand: '',
+      languageName: 'Nodejs',
+      extraArguments: '',
+    };
+    console.log(
+      '🚀 ~ file: problems.service.ts:52 ~ ProblemsService ~ solve ~ language:',
+      language,
+    );
+
+    const response = await this.sendMessage({ problem, language, code });
 
     return response;
   }
@@ -119,10 +165,6 @@ export class ProblemsService {
             expectedOutput,
             errors,
           });
-          this._apacheKafkaService.publish(
-            KafkaTopicsName.TEST_CASES_TOPIC,
-            'test case failed',
-          );
         } else {
           //passed test case
           passedTestCases.push(true);
@@ -140,10 +182,6 @@ export class ProblemsService {
             expectedOutput,
             errors,
           });
-          this._apacheKafkaService.publish(
-            KafkaTopicsName.TEST_CASES_TOPIC,
-            'test case passed',
-          );
         }
 
         return {
@@ -168,6 +206,18 @@ export class ProblemsService {
         message: 'Success',
         testCases,
       };
+    }
+  }
+
+  async sendMessage(data) {
+    console.log(
+      '🚀 ~ file: problems.service.ts:223 ~ ProblemsService ~ sendMessage ~ data:',
+      data,
+    );
+    try {
+      return this.client.send<number>({ cmd: 'problem' }, data);
+    } catch (err) {
+      console.log(err);
     }
   }
 

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: online-judge
-          image: registry.digitalocean.com/online-judge/api:latest
+          image: registry.digitalocean.com/online-judge/api:v3
           envFrom:
             - configMapRef:
                 name: env

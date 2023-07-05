@@ -8,7 +8,6 @@ import envProduction from './common/config/env.production';
 import { LanguagesModule } from './languages/languages.module';
 import { ProblemsModule } from './problems/problems.module';
 import { ProductsModule } from './products/products.module';
-import { RealtimeModule } from './realtime/realtime.module';
 import { UsersModule } from './users/users.module';
 
 const env = process.env.NODE_ENV;
@@ -33,7 +32,7 @@ const load = !env ? [envDevelopment] : [envProduction];
     }),
     ProblemsModule,
     LanguagesModule,
-    RealtimeModule,
+    // RealtimeModule,
     ProductsModule,
     UsersModule,
   ],

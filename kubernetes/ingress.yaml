@@ -7,10 +7,10 @@ metadata:
 spec:
   # tls:
   #   - hosts:
-  #       - backend.arwapro.online
+  #       - judge.arwa.bio
   #     secretName: letsencrypt-nginx
   rules:
-    - host: backend.arwapro.online
+    - host: judge.arwa.bio
       http:
         paths:
           - path: /

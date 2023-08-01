@@ -24,14 +24,8 @@ pipeline {
     }
 
     stage('Pushing Image') {
-      environment {
-              registryCredential = 'DO'
-           }
       steps{
-        script {
-          docker.withRegistry( 'registry.digitalocean.com/online-judge/api', registryCredential ) {
-            dockerImage.push("latest")
-          }
+         sh "docker push registry.digitalocean.com/online-judge/api:latest"
         }
       }
     }

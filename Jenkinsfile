@@ -26,7 +26,6 @@ pipeline {
     stage('Pushing Image') {
       steps{
          sh "docker push registry.digitalocean.com/online-judge/api:latest"
-        }
       }
     }
 

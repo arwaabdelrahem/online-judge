@@ -11,7 +11,7 @@ pipeline {
 
     stage('Checkout Source') {
       steps {
-        git 'https://github.com/arwaabdelrahem/online-judge.git'
+        git 'https://github.com/arwaabdelrahem/online-judge'
       }
     }
 
@@ -25,7 +25,7 @@ pipeline {
 
     stage('Pushing Image') {
       environment {
-               registryCredential = 'DO'
+              registryCredential = 'DO'
            }
       steps{
         script {

@@ -29,7 +29,7 @@ pipeline {
            }
       steps{
         script {
-          docker.withRegistry( 'registry.digitalocean.com/online-judge', registryCredential ) {
+          docker.withRegistry( 'registry.digitalocean.com/online-judge/api', registryCredential ) {
             dockerImage.push("latest")
           }
         }

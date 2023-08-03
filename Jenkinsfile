@@ -33,6 +33,7 @@ pipeline {
           echo USERNAME
           // or inside double quotes for string interpolation
           echo "username is $USERNAME"
+          sh "doctl registry login"
           sh "docker push registry.digitalocean.com/online-judge/api:latest"
 }
       }

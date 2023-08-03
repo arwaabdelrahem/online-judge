@@ -43,7 +43,8 @@ pipeline {
     stage('Deploying container to Kubernetes') {
       steps {
         script {
-          kubernetesDeploy(configs: "kubernetes/configmap.yaml", "kubernetes/deployment.yaml")
+          // sh "kubectl apply -f kubernetes/configmap.yaml && kubectl apply -f kubernetes/deployment.yaml"
+          kubernetesDeploy(configs: "./kubernetes/configmap.yaml", "./kubernetes/deployment.yaml")
         }
       }
     }
